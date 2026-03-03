@@ -123,7 +123,11 @@ function encodeConfigToUrl(params) {
   url.search = "";
   if (params.year) url.searchParams.set("y", params.year);
   if (params.baseTimeZone) url.searchParams.set("b", params.baseTimeZone);
-  if (params.time) url.searchParams.set("t", params.time);
+  if (params.time) {
+    url.searchParams.set("t", params.time);
+  } else if (params.hh !== undefined && params.mm !== undefined) {
+    url.searchParams.set("t", `${pad2(params.hh)}:${pad2(params.mm)}`);
+  }
   if (params.targets && params.targets.length > 0) {
     url.searchParams.set("z", params.targets.join(","));
   }
