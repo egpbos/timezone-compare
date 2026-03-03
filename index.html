@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timezone Meeting Visualizer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="header-main">
+        <h1>Timezone Meeting Visualizer</h1>
+        <p>
+          Explore how a fixed meeting time in one timezone maps to local times
+          across multiple timezones over the year to reveal DST shifts and
+          tricky weeks.
+        </p>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="controls-panel">
+        <h2 class="section-title">Meeting setup</h2>
+        <div class="controls-grid">
+          <div class="field-group">
+            <label for="yearSelect">Year</label>
+            <select id="yearSelect"></select>
+          </div>
+          <div class="field-group">
+            <label for="baseTimeZoneSelect">Base timezone</label>
+            <select id="baseTimeZoneSelect"></select>
+          </div>
+          <div class="field-group">
+            <label for="timeInput">Meeting time (base timezone)</label>
+            <input
+              id="timeInput"
+              type="time"
+              step="900"
+              value="09:00"
+            />
+          </div>
+        </div>
+
+        <h2 class="section-title">Comparison timezones</h2>
+        <div class="field-group">
+          <label for="targetTimeZonesSelect"
+            >Select comparison timezones</label
+          >
+          <div class="multi-select-wrapper">
+            <select id="targetTimeZonesSelect" multiple size="10"></select>
+            <div class="helper-text">
+              Hold <span class="kbd">Cmd</span>/<span class="kbd">Ctrl</span>
+              or <span class="kbd">Shift</span> to select multiple timezones.
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button id="updateButton" class="primary-button">
+            Update chart
+          </button>
+          <div id="statusMessage" class="status-message"></div>
+        </div>
+      </section>
+
+      <section class="chart-panel">
+        <h2 class="section-title">Local times over the year</h2>
+        <p class="chart-description">
+          Each line shows the local time of your meeting in one timezone for
+          every day of the selected year. Watch for jumps where daylight saving
+          time starts or ends.
+        </p>
+        <div class="chart-container">
+          <canvas id="timezoneChart"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        This tool runs entirely in your browser and can be hosted as static
+        files (e.g. GitHub Pages or any simple web server).
+      </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="timezones.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+  </html>
+
