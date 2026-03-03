@@ -118,6 +118,37 @@ function loadSavedSettings() {
   }
 }
 
+function encodeConfigToUrl(params) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  if (params.year) url.searchParams.set("y", params.year);
+  if (params.baseTimeZone) url.searchParams.set("b", params.baseTimeZone);
+  if (params.time) url.searchParams.set("t", params.time);
+  if (params.targets && params.targets.length > 0) {
+    url.searchParams.set("z", params.targets.join(","));
+  }
+  return url.toString();
+}
+
+function decodeUrlToConfig() {
+  const params = new URLSearchParams(window.location.search);
+  const year = params.get("y");
+  const baseTimeZone = params.get("b");
+  const time = params.get("t");
+  const targets = params.get("z");
+
+  if (!year && !baseTimeZone && !time && !targets) {
+    return null;
+  }
+
+  return {
+    year: year ? parseInt(year, 10) : null,
+    baseTimeZone: baseTimeZone || null,
+    time: time || null,
+    targets: targets ? targets.split(",") : [],
+  };
+}
+
 function saveSettings(settings) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
@@ -132,10 +163,18 @@ function initControls() {
   const targetTzSelect = document.getElementById("targetTimeZonesSelect");
   const timeInput = document.getElementById("timeInput");
   const updateButton = document.getElementById("updateButton");
+  const shareButton = document.getElementById("shareButton");
   const statusMessage = document.getElementById("statusMessage");
 
   const currentYear = getDefaultYear();
+  const urlConfig = decodeUrlToConfig();
   const saved = loadSavedSettings();
+
+  // Apply settings: URL params first, then saved settings, then defaults
+  const effectiveYear = urlConfig?.year || saved?.year || currentYear;
+  const effectiveBaseTimeZone = urlConfig?.baseTimeZone || saved?.baseTimeZone || getDefaultBaseTimeZone();
+  const effectiveTime = urlConfig?.time || saved?.time || "09:00";
+  const effectiveTargets = urlConfig?.targets?.length > 0 ? urlConfig.targets : (saved?.targets || null);
 
   // Populate year select: previous, current, next
   const years = [currentYear - 1, currentYear, currentYear + 1];
@@ -160,14 +199,14 @@ function initControls() {
     targetTzSelect.appendChild(optTarget);
   });
 
-  // Defaults
-  yearSelect.value = String(saved?.year || currentYear);
-  baseTzSelect.value = saved?.baseTimeZone || getDefaultBaseTimeZone();
-  timeInput.value = saved?.time || timeInput.value || "09:00";
+  // Set control values
+  yearSelect.value = String(effectiveYear);
+  baseTzSelect.value = effectiveBaseTimeZone;
+  timeInput.value = effectiveTime;
 
   // Restore selected target timezones
-  if (Array.isArray(saved?.targets)) {
-    const values = new Set(saved.targets);
+  if (Array.isArray(effectiveTargets)) {
+    const values = new Set(effectiveTargets);
     for (const option of targetTzSelect.options) {
       option.selected = values.has(option.value);
     }
@@ -381,6 +420,18 @@ function initControls() {
   }
 
   updateButton.addEventListener("click", handleUpdate);
+
+  shareButton.addEventListener("click", async function () {
+    const params = collectParams();
+    const shareUrl = encodeConfigToUrl(params);
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      updateStatus("Link copied to clipboard!");
+    } catch {
+      prompt("Copy this link:", shareUrl);
+    }
+  });
 
   // Initial render
   handleUpdate();
