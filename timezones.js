@@ -7,11 +7,12 @@ window.TIMEZONES = [
 
   // Americas
   { id: "America/Los_Angeles", label: "America/Los_Angeles (Los Angeles)" },
-  { id: "America/Denver", label: "America/Denver (Denver)" },
+  { id: "America/Denver", label: "America/Denver (Denver/New Mexico/NRAO)" },
   { id: "America/Chicago", label: "America/Chicago (Chicago)" },
   { id: "America/New_York", label: "America/New_York (New York)" },
   { id: "America/Toronto", label: "America/Toronto (Toronto)" },
   { id: "America/Sao_Paulo", label: "America/Sao_Paulo (São Paulo)" },
+  { id: "America/Santiago", label: "America/Santiago (Chile)" },
 
   // Europe & Africa
   { id: "Europe/London", label: "Europe/London (London)" },
